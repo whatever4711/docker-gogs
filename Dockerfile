@@ -25,7 +25,7 @@ COPY gogs/templates /app/gogs/templates
 COPY gogs/public /app/gogs/public
 
 WORKDIR /app/gogs/build
-COPY . .
+COPY gogs/ .
 
 RUN    ./docker/build-go.sh \
     && ./docker/build.sh
