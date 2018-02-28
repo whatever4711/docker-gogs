@@ -12,6 +12,7 @@ jobs:
     machine: true
     steps:
       - checkout
+      - git submodule update --init --recursive
       - run: make ARCHITECTURES=amd64
       - run: make ARCHITECTURES=amd64 push
   build_arm32v6:
@@ -19,6 +20,7 @@ jobs:
     machine: true
     steps:
       - checkout
+      - git submodule update --init --recursive
       - run: make ARCHITECTURES=arm32v6
       - run: make ARCHITECTURES=arm32v6 push
   build_arm64v8:
@@ -26,6 +28,7 @@ jobs:
     machine: true
     steps:
       - checkout
+      - git submodule update --init --recursive
       - run: make ARCHITECTURES=arm64v8
       - run: make ARCHITECTURES=arm64v8 push
   manifest:
