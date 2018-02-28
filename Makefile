@@ -52,8 +52,8 @@ manifest:
 	@./docker manifest create $(REPO):$(TAG) $(foreach arch,$(ARCHITECTURES), $(REPO):linux-$(arch)-$(TAG)) --amend
 	@$(foreach arch,$(ARCHITECTURES), ./docker manifest annotate $(REPO):$(TAG) $(REPO):linux-$(arch)-$(TAG) --os linux $(strip $(call convert_variants,$(arch)));)
 	@./docker manifest push $(REPO):$(TAG)
-	@rm -f docker
 	@./docker logout
+	@rm -f docker
 
 clean:
 	@rm -rf $(TMP_DIR) $(TMP_DOCKERFILE)

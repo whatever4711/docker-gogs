@@ -45,7 +45,9 @@ RUN apk --no-cache --no-progress add \
 
 COPY --from=build /go/gogs/build/gogs /app/gogs/gogs
 COPY gogs/docker/nsswitch.conf /etc/nsswitch.conf
-COPY gogs/docker /app/gogs/docker
+COPY gogs/docker/s6 /app/gogs/docker/s6
+COPY gogs/docker/sshd_config /app/gogs/docker/sshd_config
+COPY gogs/docker/start.sh /app/gogs/docker/start.sh
 COPY gogs/templates /app/gogs/templates
 COPY gogs/public /app/gogs/public
 # Configure Docker Container
@@ -53,3 +55,4 @@ VOLUME ["/data"]
 EXPOSE 22 3000
 ENTRYPOINT ["/app/gogs/docker/start.sh"]
 CMD ["/bin/s6-svscan", "/app/gogs/docker/s6/"]
+
