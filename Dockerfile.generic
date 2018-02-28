@@ -1,15 +1,16 @@
-FROM golang:alpine as build
+FROM <IMAGE> as build
 <QEMU>
 
 ENV GOARCH=<GOARCH>
 ENV GOOS=linux
-ENV CGO_ENABLED=0
+ENV CGO_ENABLED=1
 
 ADD /gogs /go/gogs/build
 
 RUN apk add -U --no-cache \
     linux-pam-dev \
-    build-base 
+    build-base \
+    git
 #    cross-gcc-dev \
 #    crossbuild-essential-armel \
 #    crossbuild-essential-armhf \
@@ -19,33 +20,36 @@ RUN mkdir -p /go/src/github.com/gogits && \
     ln -s /go/gogs/build/ /go/src/github.com/gogits/gogs
 
 RUN cd /go/src/github.com/gogits/gogs && \
-    go get -d -v && \
+    go get -d -v 
+RUN cd /go/src/github.com/gogits/gogs && \
     make build TAGS="sqlite cert pam"
 
 
-#FROM alpine:3.5
-#ADD https://github.com/tianon/gosu/releases/download/1.9/gosu-amd64 /usr/sbin/gosu
-#RUN apk --no-cache --no-progress add \
-#  bash \
-#  ca-certificates \
-#  git \
-#  openssh \
-#  s6 \
-#  shadow \
-#  && chmod +x /usr/sbin/gosu \
-#  && addgroup -S git \
-#  && adduser -G git -H -D -g 'Gogs Git User' git -h /data/git -s /bin/bash \
-#  && usermod -p '*' git \
-#  && passwd -u git 
-##  && echo "export GOGS_CUSTOM=${GOGS_CUSTOM}" >> /etc/profile
-#
-#COPY --from=build /go/gogs/build/gogs /app/gogs/gogs
-#COPY gogs/docker/nsswitch.conf /etc/nsswitch.conf
-#COPY gogs/docker /app/gogs/docker
-#COPY gogs/templates /app/gogs/templates
-#COPY gogs/public /app/gogs/public
-## Configure Docker Container
-#VOLUME ["/data"]
-#EXPOSE 22 3000
-#ENTRYPOINT ["/app/gogs/docker/start.sh"]
-#CMD ["/bin/s6-svscan", "/app/gogs/docker/s6/"]
+FROM <IMAGE2>
+<QEMU>
+ENV GOSUARCH=<GOSUARCH>
+ADD https://github.com/tianon/gosu/releases/download/1.10/gosu-${GOSUARCH} /usr/sbin/gosu
+RUN apk --no-cache --no-progress add \
+  bash \
+  ca-certificates \
+  git \
+  openssh \
+  s6 \
+  shadow \
+  && chmod +x /usr/sbin/gosu \
+  && addgroup -S git \
+  && adduser -G git -H -D -g 'Gogs Git User' git -h /data/git -s /bin/bash \
+  && usermod -p '*' git \
+  && passwd -u git 
+#  && echo "export GOGS_CUSTOM=${GOGS_CUSTOM}" >> /etc/profile
+
+COPY --from=build /go/gogs/build/gogs /app/gogs/gogs
+COPY gogs/docker/nsswitch.conf /etc/nsswitch.conf
+COPY gogs/docker /app/gogs/docker
+COPY gogs/templates /app/gogs/templates
+COPY gogs/public /app/gogs/public
+# Configure Docker Container
+VOLUME ["/data"]
+EXPOSE 22 3000
+ENTRYPOINT ["/app/gogs/docker/start.sh"]
+CMD ["/bin/s6-svscan", "/app/gogs/docker/s6/"]
