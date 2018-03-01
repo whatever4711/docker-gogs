@@ -53,10 +53,10 @@ ENTRYPOINT ["tini", "--", "/app/gogs/docker/start.sh"]
 CMD ["/bin/s6-svscan", "/app/gogs/docker/s6/"]
 
 LABEL de.whatever4711.gogs.version=$VERSION \
-    de.whatever4711.gogs.name="PicApport" \
+    de.whatever4711.gogs.name="Gogs" \
     de.whatever4711.gogs.docker.cmd="docker run -d -p 3000:3000 -p 2222:22 whatever4711/gogs" \
     de.whatever4711.gogs.vendor="Marcel Grossmann" \
     de.whatever4711.gogs.architecture=$ARCH \
     de.whatever4711.gogs.vcs-ref=$VCS_REF \
     de.whatever4711.gogs.vcs-url=$VCS_URL \
-    de.whatever4711.gogs.build-date=$BUILD_DATE \
+    de.whatever4711.gogs.build-date=$BUILD_DATE
