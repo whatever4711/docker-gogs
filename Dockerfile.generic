@@ -23,6 +23,13 @@ RUN cd /go/src/github.com/gogits/gogs && \
 
 FROM <IMAGE2>
 <QEMU>
+
+ARG BUILD_DATE
+ARG VCS_REF
+ARG VCS_URL
+ARG VERSION
+ARG ARCH=<ARCH>
+
 ENV GOSUARCH=<GOSUARCH>
 ADD https://github.com/tianon/gosu/releases/download/1.10/gosu-${GOSUARCH} /usr/sbin/gosu
 RUN apk --no-cache --no-progress add \
