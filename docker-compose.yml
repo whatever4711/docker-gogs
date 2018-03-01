@@ -29,6 +29,7 @@ services:
       - postgres
     volumes:
       - git:/data
+      - ./app.ini:/app/gogs/custom/conf/app.ini
     ports:
       - 22:22
     networks:

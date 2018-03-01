@@ -19,7 +19,7 @@ endif
 
 all: $(ARCHITECTURES)
 
-$(ARCHITECTURES): 
+$(ARCHITECTURES):
 	@mkdir -p $(TMP_DIR)
 	@curl -L -o $(TMP_DIR)/qemu-$@-static.tar.gz $(QEMU_STATIC)/qemu-$(strip $(call convert_archs,$@))-static.tar.gz
 	@tar xzf $(TMP_DIR)/qemu-$@-static.tar.gz -C $(TMP_DIR)
@@ -71,5 +71,5 @@ define gosuarch
 endef
 
 define convert_variants
-	$(shell echo $(1) | sed -e "s|amd64|--arch amd64|g" -e "s|arm32v7|--arch arm --variant v7|g" -e "s|arm64v8|--arch arm64 --variant v8|g")
+	$(shell echo $(1) | sed -e "s|amd64|--arch amd64|g" -e "s|arm32v5|--arch arm --variant v5|g" -e "s|arm32v6|--arch arm --variant v6|g" -e "s|arm32v7|--arch arm --variant v7|g" -e "s|arm64v8|--arch arm64 --variant v8|g")
 endef
