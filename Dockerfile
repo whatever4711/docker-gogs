@@ -1,7 +1,21 @@
-FROM <IMAGE> as build
-<QEMU>
+ARG IMAGE_BUILD=golang:alpine
+ARG IMAGE_TARGET=alpine
 
-ENV GOARCH=<GOARCH>
+# first image to download qemu and gosu and make them executable
+FROM alpine AS qemu
+ARG QEMU=x86_64
+ADD https://github.com/multiarch/qemu-user-static/releases/download/v2.11.0/qemu-${QEMU}-static /usr/bin/qemu-${QEMU}-static
+ARG GOSUARCH=amd64
+ADD https://github.com/tianon/gosu/releases/download/1.10/gosu-${GOSUARCH} /usr/sbin/gosu
+RUN chmod +x /usr/bin/qemu-${QEMU}-static /usr/sbin/gosu
+
+# second image to build gogs
+FROM ${IMAGE_BUILD} as build
+ARG QEMU=x86_64
+COPY --from=qemu /usr/bin/qemu-${QEMU}-static /usr/bin/qemu-${QEMU}-static
+ARG ARCH=amd64
+ARG GOARCH=amd64
+
 ENV GOOS=linux
 ENV CGO_ENABLED=1
 
@@ -11,27 +25,24 @@ RUN apk add -U --no-cache \
     linux-pam-dev \
     build-base \
     git
-
 RUN mkdir -p /go/src/github.com/gogits && \
     ln -s /go/gogs/build/ /go/src/github.com/gogits/gogs
-
 RUN cd /go/src/github.com/gogits/gogs && \
     go get -d -v
 RUN cd /go/src/github.com/gogits/gogs && \
     make build TAGS="sqlite cert pam"
 
-
-FROM <IMAGE2>
-<QEMU>
-
+# third image to be deployed on dockerhub
+FROM ${IMAGE_TARGET}
+ARG QEMU=x86_64
+COPY --from=qemu /usr/bin/qemu-${QEMU}-static /usr/bin/qemu-${QEMU}-static
+COPY --from=qemu /usr/sbin/gosu /usr/sbin/gosu
+ARG ARCH=amd64
 ARG BUILD_DATE
 ARG VCS_REF
 ARG VCS_URL
 ARG VERSION
-ARG ARCH=<ARCH>
 
-ENV GOSUARCH=<GOSUARCH>
-ADD https://github.com/tianon/gosu/releases/download/1.10/gosu-${GOSUARCH} /usr/sbin/gosu
 RUN apk --no-cache --no-progress add \
   bash \
   ca-certificates \
@@ -40,13 +51,11 @@ RUN apk --no-cache --no-progress add \
   s6 \
   shadow \
   tini \
-  && chmod +x /usr/sbin/gosu \
   && addgroup -S git \
   && adduser -G git -H -D -g 'Gogs Git User' git -h /data/git -s /bin/bash \
   && usermod -p '*' git \
   && passwd -u git
 #  && echo "export GOGS_CUSTOM=${GOGS_CUSTOM}" >> /etc/profile
-
 # SSH login fix. Otherwise user is kicked off after login
 #RUN sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' -i /etc/pam.d/sshd
 RUN sed -e 's@UsePrivilegeSeparation yes@UsePrivilegeSeparation no@' \
