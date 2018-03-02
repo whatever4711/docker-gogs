@@ -1,5 +1,5 @@
-ARCHITECTURES = amd64 arm32v6 arm64v8
-QEMU_STATIC = https://github.com/multiarch/qemu-user-static/releases/download/v2.9.1-1
+ARCHITECTURES = amd64 i386 arm32v6 arm64v8
+QEMU_STATIC = https://github.com/multiarch/qemu-user-static/releases/download/v2.11.0
 IMAGE = golang:alpine
 IMAGE2 = alpine
 MULTIARCH = multiarch/qemu-user-static:register
@@ -63,7 +63,7 @@ define convert_archs
 endef
 
 define goarch
-	$(shell echo $(1) | sed -e "s|arm32.*|arm|g" -e "s|arm64.*|arm64|g" )
+	$(shell echo $(1) | sed -e "s|arm32.*|arm|g" -e "s|arm64.*|arm64|g" -e "s|i386|386|g" )
 endef
 
 define gosuarch
@@ -71,5 +71,5 @@ define gosuarch
 endef
 
 define convert_variants
-	$(shell echo $(1) | sed -e "s|amd64|--arch amd64|g" -e "s|arm32v5|--arch arm --variant v5|g" -e "s|arm32v6|--arch arm --variant v6|g" -e "s|arm32v7|--arch arm --variant v7|g" -e "s|arm64v8|--arch arm64 --variant v8|g")
+	$(shell echo $(1) | sed -e "s|amd64|--arch amd64|g" -e "s|i386|--arch 386|g" -e "s|arm32v5|--arch arm --variant v5|g" -e "s|arm32v6|--arch arm --variant v6|g" -e "s|arm32v7|--arch arm --variant v7|g" -e "s|arm64v8|--arch arm64 --variant v8|g")
 endef

@@ -15,6 +15,14 @@ jobs:
       - run: git submodule update --init --recursive
       - run: make ARCHITECTURES=amd64
       - run: make ARCHITECTURES=amd64 push
+  build_i386:
+    working_directory: ~/docker-gogs
+    machine: true
+    steps:
+      - checkout
+      - run: git submodule update --init --recursive
+      - run: make ARCHITECTURES=i386
+      - run: make ARCHITECTURES=i386 push
   build_arm32v6:
     working_directory: ~/docker-gogs
     machine: true
@@ -39,7 +47,7 @@ jobs:
   badge:
     machine: true
     steps:
-      - run: curl -X POST https://hooks.microbadger.com/images/whatever4711/gogs/ZUFTloCr5m1XLN1dsHAsuHZj5Fc= 
+      - run: curl -X POST https://hooks.microbadger.com/images/whatever4711/gogs/ZUFTloCr5m1XLN1dsHAsuHZj5Fc=
 
 workflows:
   version: 2
@@ -50,6 +58,12 @@ workflows:
             tags:
               only: /.*/
       - build_amd64:
+          requires:
+            - update
+          filters:
+            tags:
+              only: /.*/
+      - build_i386:
           requires:
             - update
           filters:
@@ -70,6 +84,7 @@ workflows:
       - manifest:
           requires:
             - build_amd64
+            - build_i386
             - build_arm32v6
             - build_arm64v8
           filters:
