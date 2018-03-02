@@ -1,5 +1,4 @@
 ARCHITECTURES = amd64 i386 arm32v6 arm64v8
-QEMU_STATIC = https://github.com/multiarch/qemu-user-static/releases/download/v2.11.0
 IMAGE_BUILD = golang:alpine
 IMAGE_TARGET = alpine
 MULTIARCH = multiarch/qemu-user-static:register
@@ -20,15 +19,17 @@ all: $(ARCHITECTURES)
 $(ARCHITECTURES):
 	@docker run --rm --privileged $(MULTIARCH) --reset
 	@docker build \
-	    --build-arg IMAGE_BUILD=$@/$(IMAGE_BUILD) \
+			--build-arg IMAGE_BUILD=$@/$(IMAGE_BUILD) \
 			--build-arg IMAGE_TARGET=$@/$(IMAGE_TARGET) \
-		  --build-arg QEMU=$(strip $(call qemuarch,$@)) \
-		  --build-arg ARCH=$@ \
-	    --build-arg BUILD_DATE=$(shell date -u +"%Y-%m-%dT%H:%M:%SZ") \
+			--build-arg QEMU=$(strip $(call qemuarch,$@)) \
+			--build-arg ARCH=$@ \
+			--build-arg GOARCH=$(strip $(call goarch,$@)) \
+			--build-arg GOSUARCH=$(strip $(call gosuarch, $@)) \
+			--build-arg BUILD_DATE=$(shell date -u +"%Y-%m-%dT%H:%M:%SZ") \
 			--build-arg VCS_REF=$(shell git rev-parse --short HEAD) \
 			--build-arg VCS_URL=$(shell git config --get remote.origin.url) \
 			--build-arg VERSION=$(VERSION) \
-      -t $(REPO):linux-$@-$(TAG) .
+			-t $(REPO):linux-$@-$(TAG) .
 
 push:
 	@docker login -u $(DOCKER_USER) -p $(DOCKER_PASS)

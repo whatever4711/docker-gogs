@@ -4,10 +4,11 @@ ARG IMAGE_TARGET=alpine
 # first image to download qemu and gosu and make them executable
 FROM alpine AS qemu
 ARG QEMU=x86_64
-ADD https://github.com/multiarch/qemu-user-static/releases/download/v2.11.0/qemu-${QEMU}-static /usr/bin/qemu-${QEMU}-static
 ARG GOSUARCH=amd64
+ADD https://github.com/multiarch/qemu-user-static/releases/download/v2.11.0/qemu-${QEMU}-static /usr/bin/qemu-${QEMU}-static
 ADD https://github.com/tianon/gosu/releases/download/1.10/gosu-${GOSUARCH} /usr/sbin/gosu
-RUN chmod +x /usr/bin/qemu-${QEMU}-static /usr/sbin/gosu
+RUN chmod +x /usr/bin/qemu-${QEMU}-static
+RUN chmod +x /usr/sbin/gosu
 
 # second image to build gogs
 FROM ${IMAGE_BUILD} as build
@@ -16,6 +17,7 @@ COPY --from=qemu /usr/bin/qemu-${QEMU}-static /usr/bin/qemu-${QEMU}-static
 ARG ARCH=amd64
 ARG GOARCH=amd64
 
+ENV GOARCH=${GOARCH}
 ENV GOOS=linux
 ENV CGO_ENABLED=1
 
