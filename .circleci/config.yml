@@ -5,9 +5,9 @@ jobs:
   update:
     machine: true
     steps:
-      #- run: echo "Updating Docker engine to have multi-stage builds"
-      #- run: sudo service docker stop
-      #- run: curl -fsSL https://get.docker.com/ | sudo sh
+      - run: echo "Updating Docker engine to have multi-stage builds"
+      - run: sudo service docker stop
+      - run: curl -fsSL https://get.docker.com/ | sudo sh
       - run: docker version
   build_amd64:
     working_directory: ~/docker-gogs
@@ -83,18 +83,18 @@ workflows:
           filters:
             tags:
               only: /.*/
-#      - manifest:
-#          requires:
-#            - build_amd64
-#            - build_i386
-#            - build_arm32v6
-#            - build_arm64v8
-#          filters:
-#            tags:
-#              only: /.*/
-#      - badge:
-#          requires:
-#            - manifest
-#          filters:
-#            tags:
-#              only: /.*/
+      - manifest:
+          requires:
+            - build_amd64
+            - build_i386
+            - build_arm32v6
+            - build_arm64v8
+          filters:
+            tags:
+              only: /.*/
+      - badge:
+          requires:
+            - manifest
+          filters:
+            tags:
+              only: /.*/
