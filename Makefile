@@ -43,7 +43,7 @@ manifest:
 	#@chmod +x docker
 	@docker login -u $(DOCKER_USER) -p $(DOCKER_PASS)
 	@docker manifest create $(REPO):$(TAG) $(foreach arch,$(ARCHITECTURES), $(REPO):linux-$(arch)-$(TAG)) --amend
-	@$(foreach arch,$(ARCHITECTURES), ./docker manifest annotate $(REPO):$(TAG) $(REPO):linux-$(arch)-$(TAG) --os linux $(strip $(call convert_variants,$(arch)));)
+	@$(foreach arch,$(ARCHITECTURES), docker manifest annotate $(REPO):$(TAG) $(REPO):linux-$(arch)-$(TAG) --os linux $(strip $(call convert_variants,$(arch)));)
 	@docker manifest push $(REPO):$(TAG)
 	@docker logout
 	#@rm -f docker
