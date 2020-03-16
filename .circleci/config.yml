@@ -39,7 +39,9 @@ jobs:
     steps:
       - checkout
       - run: git submodule update --init --recursive
-      - run: make ARCHITECTURES=arm64v8
+      - run:
+          command: make ARCHITECTURES=arm64v8
+          no_output_timeout: 30m
       - run: make ARCHITECTURES=arm64v8 push
   manifest:
     machine: true
