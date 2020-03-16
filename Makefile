@@ -1,9 +1,7 @@
 ARCHITECTURES = amd64 i386 arm32v6 arm64v8
-IMAGE_BUILD = golang:alpine
-IMAGE_TARGET = alpine
-MULTIARCH = multiarch/qemu-user-static:register
 VERSION = $(shell cat gogs/templates/.VERSION)
 QEMU_VERSION = v4.2.0-6
+BINFMT = a7996909642ee92942dcd6cff44b9b95f08dad64
 #DOCKER_USER = test
 #DOCKER_PASS = test
 ifeq ($(REPO),)
@@ -15,11 +13,17 @@ else
 	TAG = $(CIRCLE_TAG)
 endif
 
-all: $(ARCHITECTURES)
+init:
+	@docker run --rm --privileged docker/binfmt:$(BINFMT)
+	@docker buildx create --name gogs_builder
+	@docker buildx use gogs_builder
+	@docker buildx inspect --bootstrap
 
-$(ARCHITECTURES):
-	@docker run --rm --privileged $(MULTIARCH) --reset
-	@docker build \
+clean:
+	@docker buildx rm gogs_builder
+
+all: init
+	@docker buildx build \
 			--build-arg IMAGE_BUILD=$@/$(IMAGE_BUILD) \
 			--build-arg IMAGE_TARGET=$@/$(IMAGE_TARGET) \
 			--build-arg QEMU=$(strip $(call qemuarch,$@)) \
