@@ -28,11 +28,11 @@ RUN apk add -U --no-cache \
     linux-pam-dev \
     build-base \
     git
-RUN mkdir -p /go/src/github.com/gogits && \
-    ln -s /go/gogs/build/ /go/src/github.com/gogits/gogs
-RUN cd /go/src/github.com/gogits/gogs && \
+RUN mkdir -p /go/src/github.com/gogs && \
+    ln -s /go/gogs/build/ /go/src/github.com/gogs/gogs
+RUN cd /go/src/github.com/gogs/gogs && \
     go get -d -v
-RUN cd /go/src/github.com/gogits/gogs && \
+RUN cd /go/src/github.com/gogs/gogs && \
     make build TAGS="sqlite cert pam"
 
 # third image to be deployed on dockerhub
