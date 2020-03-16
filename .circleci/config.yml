@@ -2,15 +2,6 @@
 version: 2.1
 
 jobs:
-  update:
-    machine: true
-    steps:
-      - run: echo "Updating Docker engine to have multi-stage builds"
-      - run: echo -e '{\n    "experimental":true \n}' | sudo tee -a /etc/docker/daemon.json
-      - run: sudo service docker stop
-      - run: curl -fsSL https://get.docker.com/ | sudo sh
-      - run: docker version
-      - run: docker --help
   build_amd64:
     working_directory: ~/docker-gogs
     machine: true
@@ -51,7 +42,11 @@ jobs:
       - checkout
       - run: mkdir ~/.docker
       - run: echo -e '{\n    "experimental":"enabled" \n}' | tee -a ~/.docker/config.json
-      - run: docker --version
+      - run: echo -e '{\n    "experimental":true \n}' | sudo tee -a /etc/docker/daemon.json
+      - run: "Updating Docker"
+      - run: sudo service docker stop
+      - run: curl -fsSL https://get.docker.com/ | sudo sh
+      - run: docker version
       - run: docker --help
       - run: make manifest
   badge:
@@ -92,8 +87,6 @@ workflows:
 #            tags:
 #              only: /.*/
       - manifest:
-          requires:
-            - update
 #            - build_amd64
 #            - build_i386
 #            - build_arm32v6
