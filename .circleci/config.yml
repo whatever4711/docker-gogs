@@ -8,6 +8,7 @@ jobs:
       - run: echo "Updating Docker engine to have multi-stage builds"
       - run: sudo service docker stop
       - run: curl -fsSL https://get.docker.com/ | sudo sh
+      - run: echo $'{\n    "experimental": true\n}' > /etc/docker/daemon.json
       - run: docker version
   build_amd64:
     working_directory: ~/docker-gogs

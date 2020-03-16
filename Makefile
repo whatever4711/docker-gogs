@@ -39,14 +39,14 @@ push:
 	@docker logout
 
 manifest:
-	@wget -O docker https://6582-88013053-gh.circle-artifacts.com/1/work/build/docker-linux-amd64
-	@chmod +x docker
-	@./docker login -u $(DOCKER_USER) -p $(DOCKER_PASS)
-	@./docker manifest create $(REPO):$(TAG) $(foreach arch,$(ARCHITECTURES), $(REPO):linux-$(arch)-$(TAG)) --amend
+	#@wget -O docker https://6582-88013053-gh.circle-artifacts.com/1/work/build/docker-linux-amd64
+	#@chmod +x docker
+	@docker login -u $(DOCKER_USER) -p $(DOCKER_PASS)
+	@docker manifest create $(REPO):$(TAG) $(foreach arch,$(ARCHITECTURES), $(REPO):linux-$(arch)-$(TAG)) --amend
 	@$(foreach arch,$(ARCHITECTURES), ./docker manifest annotate $(REPO):$(TAG) $(REPO):linux-$(arch)-$(TAG) --os linux $(strip $(call convert_variants,$(arch)));)
-	@./docker manifest push $(REPO):$(TAG)
-	@./docker logout
-	@rm -f docker
+	@docker manifest push $(REPO):$(TAG)
+	@docker logout
+	#@rm -f docker
 
 # Needed convertions for different architecture naming schemes
 # Convert qemu archs to naming scheme of https://github.com/multiarch/qemu-user-static/releases
