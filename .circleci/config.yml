@@ -51,6 +51,7 @@ jobs:
       - checkout
       - run: mkdir ~/.docker
       - run: echo -e '{\n    "experimental":"enabled" \n}' | tee -a ~/.docker/config.json
+      - run: docker --version
       - run: docker --help
       - run: make manifest
   badge:
@@ -66,42 +67,43 @@ workflows:
           filters:
             tags:
               only: /.*/
-      - build_amd64:
-          requires:
-            - update
-          filters:
-            tags:
-              only: /.*/
-      - build_i386:
-          requires:
-            - update
-          filters:
-            tags:
-              only: /.*/
-      - build_arm32v6:
-          requires:
-            - update
-          filters:
-            tags:
-              only: /.*/
-      - build_arm64v8:
-          requires:
-            - update
-          filters:
-            tags:
-              only: /.*/
+#      - build_amd64:
+#          requires:
+#            - update
+#          filters:
+#            tags:
+#              only: /.*/
+#      - build_i386:
+#          requires:
+#            - update
+#          filters:
+#            tags:
+#              only: /.*/
+#      - build_arm32v6:
+#          requires:
+#            - update
+#          filters:
+#            tags:
+#              only: /.*/
+#      - build_arm64v8:
+#          requires:
+#            - update
+#          filters:
+#            tags:
+#              only: /.*/
       - manifest:
           requires:
-            - build_amd64
-            - build_i386
-            - build_arm32v6
-            - build_arm64v8
+            - update
+#            - build_amd64
+#            - build_i386
+#            - build_arm32v6
+#            - build_arm64v8
           filters:
             tags:
               only: /.*/
-      - badge:
-          requires:
-            - manifest
-          filters:
-            tags:
-              only: /.*/
+#      - badge:
+#          requires:
+#            - manifest
+#          filters:
+#            tags:
+#              only: /.*/
