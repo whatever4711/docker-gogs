@@ -12,6 +12,7 @@ jobs:
       - run: sudo service docker stop
       - run: curl -fsSL https://get.docker.com/ | sudo sh
       - run: docker version
+      - run: docker --help
   build_amd64:
     working_directory: ~/docker-gogs
     machine: true
