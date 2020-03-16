@@ -3,6 +3,7 @@ IMAGE_BUILD = golang:alpine
 IMAGE_TARGET = alpine
 MULTIARCH = multiarch/qemu-user-static:register
 VERSION = $(shell cat gogs/templates/.VERSION)
+QEMU_VERSION = v4.2.0-6
 #DOCKER_USER = test
 #DOCKER_PASS = test
 ifeq ($(REPO),)
@@ -22,6 +23,7 @@ $(ARCHITECTURES):
 			--build-arg IMAGE_BUILD=$@/$(IMAGE_BUILD) \
 			--build-arg IMAGE_TARGET=$@/$(IMAGE_TARGET) \
 			--build-arg QEMU=$(strip $(call qemuarch,$@)) \
+			--build-arg QEMU_VERSION=$(QEMU_VERSION) \
 			--build-arg ARCH=$@ \
 			--build-arg GOARCH=$(strip $(call goarch,$@)) \
 			--build-arg GOSUARCH=$(strip $(call gosuarch, $@)) \

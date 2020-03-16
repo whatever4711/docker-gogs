@@ -4,8 +4,9 @@ ARG IMAGE_TARGET=alpine
 # first image to download qemu and gosu and make them executable
 FROM alpine AS qemu
 ARG QEMU=x86_64
+ARG QEMU_VERSION=v4.2.0-6
 ARG GOSUARCH=amd64
-ADD https://github.com/multiarch/qemu-user-static/releases/download/v2.11.0/qemu-${QEMU}-static /usr/bin/qemu-${QEMU}-static
+ADD https://github.com/multiarch/qemu-user-static/releases/download/${QEMU_VERSION}/qemu-${QEMU}-static /usr/bin/qemu-${QEMU}-static
 ADD https://github.com/tianon/gosu/releases/download/1.10/gosu-${GOSUARCH} /usr/sbin/gosu
 RUN chmod +x /usr/bin/qemu-${QEMU}-static
 RUN chmod +x /usr/sbin/gosu
