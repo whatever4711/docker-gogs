@@ -57,41 +57,33 @@ workflows:
   version: 2
   build-and-deploy:
     jobs:
-#      - build_amd64:
-#          requires:
-#            - update
-#          filters:
-#            tags:
-#              only: /.*/
-#      - build_i386:
-#          requires:
-#            - update
-#          filters:
-#            tags:
-#              only: /.*/
-#      - build_arm32v6:
-#          requires:
-#            - update
-#          filters:
-#            tags:
-#              only: /.*/
-#      - build_arm64v8:
-#          requires:
-#            - update
-#          filters:
-#            tags:
-#              only: /.*/
-      - manifest:
-#            - build_amd64
-#            - build_i386
-#            - build_arm32v6
-#            - build_arm64v8
+      - build_amd64:
           filters:
             tags:
               only: /.*/
-#      - badge:
-#          requires:
-#            - manifest
-#          filters:
-#            tags:
-#              only: /.*/
+      - build_i386:
+          filters:
+            tags:
+              only: /.*/
+      - build_arm32v6:
+          filters:
+            tags:
+              only: /.*/
+      - build_arm64v8:
+          filters:
+            tags:
+              only: /.*/
+      - manifest:
+            - build_amd64
+            - build_i386
+            - build_arm32v6
+            - build_arm64v8
+          filters:
+            tags:
+              only: /.*/
+      - badge:
+          requires:
+            - manifest
+          filters:
+            tags:
+              only: /.*/
