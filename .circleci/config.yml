@@ -7,7 +7,7 @@ jobs:
     steps:
       - run: echo "Updating Docker engine to have multi-stage builds"
       - run: echo -e '{\n    "experimental":true \n}' | sudo tee -a /etc/docker/daemon.json
-      - run: echo -e '{\n    "experimental": "enabled" \n}' | tee -a ~/.docker/config.json
+      - run: echo -e '{\n    "experimental":"enabled" \n}' | tee -a ~/.docker/config.json
       - run: sudo service docker stop
       - run: curl -fsSL https://get.docker.com/ | sudo sh
       - run: docker version
