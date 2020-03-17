@@ -16,13 +16,13 @@ jobs:
     machine: true
     steps:
       - git/checkout-with-submodules
-      - sudo apt update
-      - sudo apt install -y qemu qemu-user-static qemu-user binfmt-support
+      - sudo apt-get update
+      - sudo apt-get install -y qemu qemu-user-static qemu-user binfmt-support
       - git clone https://github.com/computermouth/qemu-static-conf.git
       - sudo mkdir -p /lib/binfmt.d
       - sudo cp qemu-static-conf/*.conf /lib/binfmt.d/
       - sudo systemctl restart systemd-binfmt.service
-      - sudo apt purge -y docker-ce docker-ce-cli
+      - sudo apt-get purge -y docker-ce docker-ce-cli
       - sudo curl -fsSL https://get.docker.com -o get-docker.sh
       - sudo sh get-docker.sh
       - sudo usermod -aG docker $(whoami)
