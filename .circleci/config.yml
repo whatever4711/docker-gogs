@@ -11,5 +11,4 @@ orbs:
 workflows:
   build:
     jobs:
-      - docker/build
-      
+      - docker-buildx/publish
