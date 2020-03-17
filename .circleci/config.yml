@@ -10,6 +10,8 @@ orbs:
   git: opuscapita/git@0.0.3
 
 jobs:
+  working_directory: ~/docker-gogs
+  machine: true
   build-only:
     steps:
       - git/checkout-with-submodules
