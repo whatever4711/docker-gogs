@@ -6,9 +6,12 @@ description: |
   cross-compile docker images and deploy them
 
 orbs:
-  docker-buildx: foodles/docker-buildx@0.0.1
+  docker: circleci/docker@1.0.0
+
 
 workflows:
-  build:
+  build-docker-image-only:
     jobs:
-      - docker-buildx/publish
+      - docker/publish:
+          deploy: false
+          image: test/test
