@@ -12,3 +12,4 @@ workflows:
   build:
     jobs:
       - docker/build
+      
