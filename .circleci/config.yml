@@ -21,7 +21,7 @@ jobs:
       - run: git clone https://github.com/computermouth/qemu-static-conf.git
       - run: sudo mkdir -p /lib/binfmt.d
       - run: sudo cp qemu-static-conf/*.conf /lib/binfmt.d/
-      - run: sudo systemctl restart systemd-binfmt.service
+      - run: sudo service binfmt restart
       - run: sudo apt-get purge -y docker-ce docker-ce-cli
       - run: mkdir $HOME/.docker
       - run: echo -e '{\n    "experimental":"enabled" \n}' | tee -a $HOME/.docker/config.json
