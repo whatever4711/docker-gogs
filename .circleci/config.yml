@@ -8,12 +8,15 @@ description: |
 orbs:
   docker: circleci/docker@1.0.0
 
+jobs:
+  build-only:
+    executor: docker/machine
+    steps:
+      - checkout
+      - docker/build:
+          image: test/test
 
 workflows:
   build-docker-image-only:
     jobs:
-      - docker/publish:
-          deploy: false
-          image: test/test
-      steps:
-        - checkout
+      - build-only
