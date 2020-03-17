@@ -7,12 +7,13 @@ description: |
 
 orbs:
   docker: circleci/docker@1.0.0
+  git: opuscapita/git@0.0.3
 
 jobs:
   build-only:
     executor: docker/machine
     steps:
-      - checkout
+      - git/checkout-with-submodules
       - docker/build:
           image: test/test
 
