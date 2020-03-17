@@ -1,90 +1,31 @@
 # Use the latest 2.1 version of CircleCI pipeline process engine. See: https://circleci.com/docs/2.0/configuration-reference
 version: 2.1
 
-jobs:
-  build_amd64:
-    working_directory: ~/docker-gogs
-    machine: true
-    steps:
-      - checkout
-      - run: git submodule update --init --recursive
-      - run: make ARCHITECTURES=amd64
-      - run: make ARCHITECTURES=amd64 push
-  build_i386:
-    working_directory: ~/docker-gogs
-    machine: true
-    steps:
-      - checkout
-      - run: git submodule update --init --recursive
-      - run: make ARCHITECTURES=i386
-      - run: make ARCHITECTURES=i386 push
-  build_arm32v6:
-    working_directory: ~/docker-gogs
-    machine: true
-    steps:
-      - checkout
-      - run: git submodule update --init --recursive
-      - run: make ARCHITECTURES=arm32v6
-      - run: make ARCHITECTURES=arm32v6 push
-  build_arm64v8:
-    working_directory: ~/docker-gogs
-    machine: true
-    steps:
-      - checkout
-      - run: git submodule update --init --recursive
-      - run:
-          command: make ARCHITECTURES=arm64v8
-          no_output_timeout: 30m
-      - run: make ARCHITECTURES=arm64v8 push
-  manifest:
-    machine: true
-    steps:
-      - checkout
-      - run: mkdir ~/.docker
-      - run: echo -e '{\n    "experimental":"enabled" \n}' | tee -a ~/.docker/config.json
-      - run: echo -e '{\n    "experimental":true \n}' | sudo tee -a /etc/docker/daemon.json
-      - run: sudo service docker stop
-      - run: curl -fsSL https://get.docker.com/ | sudo sh
-      - run: docker version
-      - run: docker --help
-      - run: make manifest
-  badge:
-    machine: true
-    steps:
-      - run: curl -X POST https://hooks.microbadger.com/images/whatever4711/gogs/ZUFTloCr5m1XLN1dsHAsuHZj5Fc=
+description: |
+  Install/configure docker with buildx to
+  cross-compile docker images and deploy them
 
-workflows:
-  version: 2
-  build-and-deploy:
-    jobs:
-      - build_amd64:
-          filters:
-            tags:
-              only: /.*/
-      - build_i386:
-          filters:
-            tags:
-              only: /.*/
-      - build_arm32v6:
-          filters:
-            tags:
-              only: /.*/
-      - build_arm64v8:
-          filters:
-            tags:
-              only: /.*/
-      - manifest:
-          requires:
-            - build_amd64
-            - build_i386
-            - build_arm32v6
-            - build_arm64v8
-          filters:
-            tags:
-              only: /.*/
-      - badge:
-          requires:
-            - manifest
-          filters:
-            tags:
-              only: /.*/
+orbs:
+  bt: circleci/build-tools@2.6.3
+  orb-tools: circleci/orb-tools@8.8.0
+  docker: circleci/docker@0.5.13
+
+jobs:
+  steps:
+    - run:
+        name: Install buildx
+        command: |
+          BUILDX_BINARY_URL="https://github.com/docker/buildx/releases/download/v0.3.1/buildx-v0.3.1.linux-amd64"
+
+          curl --output docker-buildx \
+            --silent --show-error --location --fail --retry 3 \
+            "$BUILDX_BINARY_URL"
+
+          mkdir -p ~/.docker/cli-plugins
+
+          mv docker-buildx ~/.docker/cli-plugins/
+          chmod a+x ~/.docker/cli-plugins/docker-buildx
+
+          docker buildx install
+          # Run binfmt
+          docker run --rm --privileged docker/binfmt:a7996909642ee92942dcd6cff44b9b95f08dad64
