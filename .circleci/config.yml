@@ -15,3 +15,5 @@ workflows:
       - docker/publish:
           deploy: false
           image: test/test
+      steps:
+        - checkout
