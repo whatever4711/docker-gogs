@@ -16,22 +16,21 @@ jobs:
     machine: true
     steps:
       - git/checkout-with-submodules
-      - sudo apt-get update
-      - sudo apt-get install -y qemu qemu-user-static qemu-user binfmt-support
-      - git clone https://github.com/computermouth/qemu-static-conf.git
-      - sudo mkdir -p /lib/binfmt.d
-      - sudo cp qemu-static-conf/*.conf /lib/binfmt.d/
-      - sudo systemctl restart systemd-binfmt.service
-      - sudo apt-get purge -y docker-ce docker-ce-cli
-      - sudo curl -fsSL https://get.docker.com -o get-docker.sh
-      - sudo sh get-docker.sh
-      - sudo usermod -aG docker $(whoami)
-      - mkdir $HOME/.docker
-      - sh -c 'echo "{ \"experimental\":\"enabled\" }" >> $HOME/.docker/config.json'
-      - docker buildx create --name=qemu
-      - docker buildx inspect --bootstrap qemu
-      - docker buildx use qemu
-      - make
+      - run: sudo apt-get update
+      - run: sudo apt-get install -y qemu qemu-user-static qemu-user binfmt-support
+      - run: git clone https://github.com/computermouth/qemu-static-conf.git
+      - run: sudo mkdir -p /lib/binfmt.d
+      - run: sudo cp qemu-static-conf/*.conf /lib/binfmt.d/
+      - run: sudo systemctl restart systemd-binfmt.service
+      - run: sudo apt-get purge -y docker-ce docker-ce-cli
+      - run: mkdir $HOME/.docker
+      - run: echo -e '{\n    "experimental":"enabled" \n}' | tee -a $HOME/.docker/config.json
+      - run: echo -e '{\n    "experimental":true \n}' | sudo tee -a /etc/docker/daemon.json
+      - run: curl -fsSL https://get.docker.com/ | sudo sh
+      - run: sudo usermod -aG docker $(whoami)
+      - run: docker version
+      - run: docker --help
+      - run: make
 
 workflows:
   build-docker-image-only:
