@@ -10,9 +10,10 @@ orbs:
   git: opuscapita/git@0.0.3
 
 jobs:
-  working_directory: ~/docker-gogs
-  machine: true
+
   build-only:
+    working_directory: ~/docker-gogs
+    machine: true
     steps:
       - git/checkout-with-submodules
       - sudo apt update
