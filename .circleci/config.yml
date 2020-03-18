@@ -23,7 +23,7 @@ jobs:
       - run: sudo mkdir -p /lib/binfmt.d
       - run: sudo cp qemu-static-conf/*.conf /lib/binfmt.d/
     #  - run: sudo service binfmt restart
-      - run: sudo apt-get purge -y docker-ce
+      - run: sudo apt-get remove -y docker-ce docker-ce-cli containerd.io
       - run: mkdir $HOME/.docker
       - run: echo -e '{\n    "experimental":"enabled" \n}' | tee -a $HOME/.docker/config.json
       - run: echo -e '{\n    "experimental":true \n}' | sudo tee -a /etc/docker/daemon.json
