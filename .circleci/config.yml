@@ -41,7 +41,8 @@ jobs:
             chmod a+x ~/.docker/cli-plugins/docker-buildx
       - run: docker version
       - run: docker --help
-      - run: make
+      - run: make init
+      - run: make all
 
 workflows:
   build-docker-image-only:

@@ -22,7 +22,7 @@ init:
 clean:
 	@docker buildx rm gogs_builder
 
-all: init
+all:
 	@docker buildx build \
 			--build-arg BUILD_DATE=$(shell date -u +"%Y-%m-%dT%H:%M:%SZ") \
 			--build-arg VCS_REF=$(shell git rev-parse --short HEAD) \
