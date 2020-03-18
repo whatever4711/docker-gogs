@@ -39,7 +39,6 @@ jobs:
             mkdir -p ~/.docker/cli-plugins
             mv docker-buildx ~/.docker/cli-plugins/
             chmod a+x ~/.docker/cli-plugins/docker-buildx
-            docker buildx install
       - run: docker version
       - run: docker --help
       - run: make
