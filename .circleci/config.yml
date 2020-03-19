@@ -5,10 +5,11 @@ description: |
   Install/configure docker with buildx to
   cross-compile docker images and deploy them
 
-orbs:
-  git: opuscapita/git@0.0.3
-
 commands:
+  recursive-checkout:
+    steps:
+      - checkout
+      - run: git submodule update --init --recursive
   update-docker:
     parameters:
       experimental:
@@ -65,7 +66,7 @@ commands:
           name: "Install BuildX plugin for Docker"
           command: |
             curl --output docker-buildx --silent --show-error --location --fail --retry 3 \
-              "<< parameters.url >>/<< parameters.version >>/<< parameters.artifact >>"
+              "<< parameters.url >>/download/<< parameters.version >>/<< parameters.artifact >>"
             mkdir -p ~/.docker/cli-plugins
             mv docker-buildx ~/.docker/cli-plugins/
             chmod a+x ~/.docker/cli-plugins/docker-buildx
@@ -76,7 +77,7 @@ jobs:
     machine:
       image: ubuntu-1604:201903-01
     steps:
-      - git/checkout-with-submodules
+      - recursive-checkout
       - update-docker
       - install-qemu
       - install-buildx
