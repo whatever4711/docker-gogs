@@ -6,39 +6,58 @@ description: |
   cross-compile docker images and deploy them
 
 orbs:
-  docker: circleci/docker@1.0.0
   git: opuscapita/git@0.0.3
 
-jobs:
+commands:
+  update-docker:
+    steps:
+      - run:
+          name: "Remove existing Docker installation"
+          command: |
+            sudo apt-get update -qq
+            sudo apt-get remove -y docker-ce docker-ce-cli containerd.io
+      - run:
+          name: "Install current Docker version and enable experimental features"
+          command: |
+            mkdir $HOME/.docker
+            echo -e '{\n    "experimental":"enabled" \n}' | tee -a $HOME/.docker/config.json
+            echo -e '{\n    "experimental":true \n}' | sudo tee -a /etc/docker/daemon.json
+            curl -fsSL https://get.docker.com/ | sudo sh
+            sudo usermod -aG docker $(whoami)
+  install-qemu:
+    steps:
+      - run:
+          name: "Install QEMU support for multi-architecture builds"
+          command: |
+            sudo apt-get update -qq
+            sudo apt-get install -y qemu qemu-user-static qemu-user binfmt-support
+            git clone https://github.com/computermouth/qemu-static-conf.git
+            sudo mkdir -p /lib/binfmt.d
+            sudo cp qemu-static-conf/*.conf /lib/binfmt.d/
+  install-buildx:
+    steps:
+      - run:
+          name: "Install BuildX plugin for Docker"
+          command: |
+            BUILDX_BINARY_URL="https://github.com/docker/buildx/releases/download/v0.3.1/buildx-v0.3.1.linux-amd64"
+            curl --output docker-buildx --silent --show-error --location --fail --retry 3 \
+              "$BUILDX_BINARY_URL"
+            mkdir -p ~/.docker/cli-plugins
+            mv docker-buildx ~/.docker/cli-plugins/
+            chmod a+x ~/.docker/cli-plugins/docker-buildx
 
+
+
+jobs:
   build-only:
     working_directory: ~/docker-gogs
     machine:
       image: ubuntu-1604:201903-01
     steps:
       - git/checkout-with-submodules
-      - run: sudo apt-get update
-      - run: sudo apt-get install -y qemu qemu-user-static qemu-user binfmt-support
-      - run: git clone https://github.com/computermouth/qemu-static-conf.git
-      - run: sudo mkdir -p /lib/binfmt.d
-      - run: sudo cp qemu-static-conf/*.conf /lib/binfmt.d/
-    #  - run: sudo service binfmt restart
-      - run: sudo apt-get remove -y docker-ce docker-ce-cli containerd.io
-      - run: mkdir $HOME/.docker
-      - run: echo -e '{\n    "experimental":"enabled" \n}' | tee -a $HOME/.docker/config.json
-      - run: echo -e '{\n    "experimental":true \n}' | sudo tee -a /etc/docker/daemon.json
-      - run: curl -fsSL https://get.docker.com/ | sudo sh
-      - run: sudo usermod -aG docker $(whoami)
-      - run:
-          name: Install buildx
-          command: |
-            BUILDX_BINARY_URL="https://github.com/docker/buildx/releases/download/v0.3.1/buildx-v0.3.1.linux-amd64"
-            curl --output docker-buildx \
-              --silent --show-error --location --fail --retry 3 \
-              "$BUILDX_BINARY_URL"
-            mkdir -p ~/.docker/cli-plugins
-            mv docker-buildx ~/.docker/cli-plugins/
-            chmod a+x ~/.docker/cli-plugins/docker-buildx
+      - update-docker
+      - install-qemu
+      - install-buildx
       - run: docker version
       - run: docker --help
       - run: make init
