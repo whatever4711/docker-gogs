@@ -1,4 +1,4 @@
-## first image to build gogs
+# first image to build gogs
 FROM golang:alpine as build
 
 ENV GOOS=linux
@@ -19,19 +19,14 @@ RUN cd /go/src/github.com/gogs/gogs && \
 RUN cd /go/src/github.com/gogs/gogs && \
     make build TAGS="sqlite cert pam"
 
-#  export GOARCH=$(echo $(uname -m) | sed -e "s|arm.*|arm|g" -e "s|aarch64|arm64|g" -e "s|i386|386|g" -e "s|x86_64|amd64|g") && \
-
-# third image to be deployed on dockerhub
+# second image to be deployed on dockerhub
 FROM alpine
-##ARG QEMU=x86_64
-##COPY --from=qemu /usr/bin/qemu-${QEMU}-static /usr/bin/qemu-${QEMU}-static
-##COPY --from=qemu /usr/sbin/gosu /usr/sbin/gosu
-##ARG ARCH=amd64
-##ARG BUILD_DATE
-##ARG VCS_REF
-##ARG VCS_URL
-##ARG VERSION
-#
+ARG TARGETPLATFORM
+ARG BUILD_DATE
+ARG VCS_REF
+ARG VCS_URL
+ARG VERSION
+
 RUN apk --no-cache --no-progress add \
   bash \
   ca-certificates \
@@ -73,7 +68,7 @@ LABEL de.whatever4711.gogs.version=$VERSION \
     de.whatever4711.gogs.name="Gogs" \
     de.whatever4711.gogs.docker.cmd="docker run -d -p 3000:3000 -p 2222:22 whatever4711/gogs" \
     de.whatever4711.gogs.vendor="Marcel Grossmann" \
-    de.whatever4711.gogs.architecture=$ARCH \
+    de.whatever4711.gogs.architecture=$TARGETPLATFORM \
     de.whatever4711.gogs.vcs-ref=$VCS_REF \
     de.whatever4711.gogs.vcs-url=$VCS_URL \
     de.whatever4711.gogs.build-date=$BUILD_DATE

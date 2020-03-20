@@ -72,7 +72,7 @@ commands:
             chmod a+x ~/.docker/cli-plugins/docker-buildx
 
 jobs:
-  build-only:
+  buildx:
     working_directory: ~/docker-gogs
     machine:
       image: ubuntu-1604:201903-01
@@ -81,12 +81,12 @@ jobs:
       - update-docker
       - install-qemu
       - install-buildx
-      - run: docker version
-      - run: docker --help
-      - run: make init
-      - run: make all
+      - run: make
 
 workflows:
-  build-docker-image-only:
+  buildx-and-push:
     jobs:
-      - build-only
+      - buildx:
+          filters:
+              tags:
+                only: /.*/
