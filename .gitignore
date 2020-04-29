@@ -1,2 +1,3 @@
 Dockerfile.generated
 tmp/
+app.ini
